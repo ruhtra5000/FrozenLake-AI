@@ -1,23 +1,17 @@
 import gymnasium as gym
+from GeneticManager import GeneticManager
 
 # Creating environment and some variables
 env = gym.make("FrozenLake-v1", render_mode = "human")
 
-# Generates a random chromosome
-def generateChromosome():  
-    chromosome = ""
-    for _ in range(10):
-        chromosome += str(env.action_space.sample())
+geneticManager = GeneticManager(env.action_space)
 
-    return chromosome
-
-
-generations = 10
+numberGenerations = 10
 stepsPerGeneration = 10 
 
 # "Main"
-for gnrt in range(generations):
+for generation in range(numberGenerations):
     env.reset()
-    dna = generateChromosome()
+    dna = geneticManager.generateChromosome()
     for step in range(stepsPerGeneration):
         newState, reward, terminated, truncated, info = env.step(int(dna[step]))
