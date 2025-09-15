@@ -10,4 +10,4 @@ Frozen lake environment can be found at [Gymnasium](https://gymnasium.farama.org
 
 - Install any [Python](https://www.python.org/downloads/) version;
 - Run the command: `pip install "gymnasium[toy-text]"` (downloads environment);
-- Run the command: `py FrozenLake.py`, or hit the run button in your IDE.
+- Run the command: `py code/FrozenLake.py`, or hit the run button in your IDE.
