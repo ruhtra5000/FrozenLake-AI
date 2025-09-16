@@ -7,7 +7,7 @@ env = gym.make("FrozenLake-v1", is_slippery=True, render_mode = None)
 
 geneticManager = GeneticManager(env.action_space)
 
-numberGenerations = 100
+numberGenerations = 200
 
 # Calculates average fitness by generation
 def avgFitness(population):
@@ -21,7 +21,9 @@ def avgFitness(population):
 def testBestIndividual(bestIndividual):
     testEnv = gym.make("FrozenLake-v1", is_slippery=True, render_mode = "human")
 
-    for _ in range(5):
+    print(f"\n\nBest individual data\nDNA: {bestIndividual["ind"]}\nFitness:{bestIndividual["fitness"]}")
+
+    for _ in range(10):
         state, _ = testEnv.reset()
 
         for _ in range(geneticManager.maxStepsPerEpisode):
@@ -45,8 +47,8 @@ def main():
         elite = sortedPop[0:numIndividuals]
 
         # Prints (monitoring)
-        print(f"\nBest in gen {generation}:\n{elite[0]}")
-        print(f"Avg. Fitness: {avgFitness(popWithFit)}")
+        print(f"\nBest in gen {generation+1}:\n{elite[0]}")
+        print(f"Avg. Fitness: {avgFitness(popWithFit):.4f}")
 
         # Storaging best individual (overall)
         if bestIndividual["fitness"] < elite[0]["fitness"]:
