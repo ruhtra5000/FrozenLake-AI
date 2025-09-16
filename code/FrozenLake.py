@@ -7,9 +7,7 @@ env = gym.make("FrozenLake-v1", is_slippery=True, render_mode = None)
 
 geneticManager = GeneticManager(env.action_space)
 
-bestIndividual = {"ind": [], "fitness": 0.0}
-
-numberGenerations = 200
+numberGenerations = 100
 
 # Calculates average fitness by generation
 def avgFitness(population):
@@ -19,8 +17,24 @@ def avgFitness(population):
     
     return totalFitness/geneticManager.populationLen
 
+# Visual test with the best individual found
+def testBestIndividual(bestIndividual):
+    testEnv = gym.make("FrozenLake-v1", is_slippery=True, render_mode = "human")
+
+    for _ in range(5):
+        state, _ = testEnv.reset()
+
+        for _ in range(geneticManager.maxStepsPerEpisode):
+            newState, reward, terminated, truncated, _ = testEnv.step(bestIndividual["ind"][state])
+            state = newState
+
+            if terminated or truncated:
+                break
+
 # "Main"
 def main():
+    bestIndividual = {"ind": [], "fitness": 0.0}
+
     for generation in range(numberGenerations):
         # Calculate fitness 
         popWithFit = geneticManager.calculateFullPopulationFitness(env)
@@ -55,5 +69,6 @@ def main():
 
         geneticManager.population = newPopulation
 
+    testBestIndividual(bestIndividual)
 
 main()
