@@ -56,17 +56,6 @@ class GeneticManager:
     # Calculates fitness for a portion of the population (Thread target function)
     def subPopulationFitness(self, env: gym.Env, subpopulation: list, results: list, index: int):
         results[index] = [{"ind": ind, "fitness": self.fitness(ind, env)} for ind in subpopulation]
-    
-    # Tournament selection
-    def tournament(self, group: list):
-        # Group contain dicts:
-        # {"ind": list (dna), "fitness": float}
-
-        # Select random individuals
-        subgroup = random.sample(group, k=self.tournamentSize)
-
-        # Return best individual (max fitness)
-        return max(subgroup, key= lambda x: x["fitness"])
 
     # Fitness function
     def fitness(self, dna: list, env: gym.Env):
@@ -97,6 +86,17 @@ class GeneticManager:
         #Returns average reward
         return totalReward/self.episodesPerFitness
     
+    # Tournament selection
+    def tournament(self, group: list):
+        # Group contain dicts:
+        # {"ind": list (dna), "fitness": float}
+
+        # Select random individuals
+        subgroup = random.sample(group, k=self.tournamentSize)
+
+        # Return best individual (max fitness)
+        return max(subgroup, key= lambda x: x["fitness"])
+
     # Crossover two individuals (generate 2 new individuals)
     def crossover(self, parent1: list, parent2: list):
         probCrossover = random.random()
