@@ -77,6 +77,15 @@ class GeneticManager:
 
             for _ in range(self.maxStepsPerEpisode):
                 newState, reward, terminated, truncated, _ = env.step(dna[state])
+
+                # Penalty for falling into a hole 
+                if reward == 0 and terminated: 
+                    reward = -1
+
+                # Penalty for each step taken
+                elif reward == 0: 
+                    reward = -0.01
+
                 episodeReward += reward
                 state = newState
 
