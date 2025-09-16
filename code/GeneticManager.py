@@ -11,7 +11,7 @@ class GeneticManager:
         self.episodesPerFitness = 30
         self.maxStepsPerEpisode = 100
         self.crossoverRate = 0.8
-        self.mutationRate = 0.05        
+        self.mutationRate = 0.15
 
     # Generates the first population (full random)
     def initialPopulation(self):
@@ -21,40 +21,24 @@ class GeneticManager:
     def generateRandomChromosome(self):  
         chromosome = []
         for _ in range(16):
-            chromosome.append(self.actionSpace.sample()) 
+            chromosome.append(int(self.actionSpace.sample())) 
 
         return chromosome
     
+    # Calculates fitness for all individuals
+    def calculateFullPopulationFitness(self, env: gym.Env):
+        return [{"ind": ind, "fitness": self.fitness(ind, env)} for ind in self.population]
+    
     # Tournament selection
-    def tournament(self, env: gym.Env):
-        bestIndividuals = []
-        index = 0
-        bestFitness = 0.0
-        bestIndex = 0
-        
-        while index < self.populationLen:
-            # Gets a group of individuals
-            selectedIndividuals = self.population[index:(index+self.tournamentSize)]
-            
-            # Seeks best individual per group
-            fitnessValues = [self.fitness(ind, env) for ind in selectedIndividuals]
+    def tournament(self, group: list):
+        # Group contain dicts:
+        # {"ind": list (dna), "fitness": float}
 
-            maxFitness = max(fitnessValues) 
-            maxFitnessIndex = fitnessValues.index(maxFitness)
+        # Select random individuals
+        subgroup = random.sample(group, k=self.tournamentSize)
 
-            bestIndividuals.append(self.population[(index+maxFitnessIndex)])
-
-            # Seeks best individual in general
-            if maxFitness > bestFitness:
-                bestFitness = maxFitness
-                bestIndex = index+maxFitnessIndex
-
-            # Updates index (going to the next group)
-            index += self.tournamentSize
-
-        print("\n\nBest individual in generation:")
-        print(f"Fitness: {bestFitness} | Index: {bestIndex}")
-        print(self.population[bestIndex])
+        # Return best individual (max fitness)
+        return max(subgroup, key= lambda x: x["fitness"])
 
     # Fitness function
     def fitness(self, dna: list, env: gym.Env):
@@ -74,4 +58,29 @@ class GeneticManager:
             totalReward += episodeReward
 
         #Returns average reward
-        return totalReward/self.maxStepsPerEpisode
+        return totalReward/self.episodesPerFitness
+    
+    # Crossover two individuals (generate 2 new individuals)
+    def crossover(self, parent1: list, parent2: list):
+        probCrossover = random.random()
+        # Do the crossover
+        if probCrossover < self.crossoverRate:
+            cutIndex = random.randint(1, len(parent1)-1) # Random cut point
+    
+            child1 = parent1[0:cutIndex] + parent2[cutIndex:]
+            child2 = parent2[0:cutIndex] + parent1[cutIndex:]
+
+            return child1, child2
+        # Returns the parents
+        else:
+            return parent1, parent2
+
+    # Mutate chromosome
+    def mutation(self, dna: list):
+        for i in range(len(dna)):
+            if random.random() < self.mutationRate:
+                allActions = [0, 1, 2, 3]
+                allActions.remove(dna[i])
+                dna[i] = random.choice(allActions)
+        
+        return dna
