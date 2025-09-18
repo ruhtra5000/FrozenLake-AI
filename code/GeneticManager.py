@@ -12,7 +12,7 @@ class GeneticManager:
         self.episodesPerFitness = 30
         self.maxStepsPerEpisode = 100
         self.crossoverRate = 0.8
-        self.mutationRate = 0.15
+        self.mutationRate = 0.1
 
     # Generates the first population (full random)
     def initialPopulation(self):
@@ -73,7 +73,7 @@ class GeneticManager:
 
                 # Penalty for each step taken
                 elif reward == 0: 
-                    reward = -0.01
+                    reward = -0.015
 
                 episodeReward += reward
                 state = newState
