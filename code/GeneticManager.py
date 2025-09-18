@@ -1,8 +1,14 @@
 import gymnasium as gym
 import random
-import threading
 
 # Class responsible for all genetic procedures
+# - Store relevant variables
+# - Generate random chromosomes
+# - Fitness calculation
+# - Tournament selection
+# - Crossover
+# - Mutation
+
 class GeneticManager:
     def __init__(self, actionSpace):
         self.actionSpace = actionSpace
@@ -25,37 +31,6 @@ class GeneticManager:
             chromosome.append(int(self.actionSpace.sample())) 
 
         return chromosome
-    
-    # Calculates fitness for all individuals
-    def calculateFullPopulationFitness(self, env: gym.Env, numThreads = 2):
-        fitnessCalculation = [[] for _ in range(numThreads)]
-        threads = []
-        elementsPerThread = self.populationLen // numThreads
-
-        # Create threads
-        for i in range(numThreads):
-            t = threading.Thread(
-                target=self.subPopulationFitness, 
-                args=(env, self.population[i*elementsPerThread:(i+1)*elementsPerThread], fitnessCalculation, i)
-            )
-
-            threads.append(t)
-            t.start() # initialize a thread
-        
-        # Wait for all threads to end
-        for t in threads:  
-            t.join()
-
-        # Join the results
-        finalFitness = []
-        for i in range(numThreads):
-            finalFitness = finalFitness + fitnessCalculation[i]
-
-        return finalFitness
-
-    # Calculates fitness for a portion of the population (Thread target function)
-    def subPopulationFitness(self, env: gym.Env, subpopulation: list, results: list, index: int):
-        results[index] = [{"ind": ind, "fitness": self.fitness(ind, env)} for ind in subpopulation]
 
     # Fitness function
     def fitness(self, dna: list, env: gym.Env):

@@ -1,6 +1,7 @@
 import gymnasium as gym
 from GeneticManager import GeneticManager
 from operator import itemgetter
+import threading
 
 # Creating environment and some variables
 env = gym.make("FrozenLake-v1", is_slippery=True, render_mode = None)
@@ -8,6 +9,37 @@ env = gym.make("FrozenLake-v1", is_slippery=True, render_mode = None)
 geneticManager = GeneticManager(env.action_space)
 
 numberGenerations = 200
+
+# Calculates fitness for all individuals
+def calculateFullPopulationFitness(env: gym.Env, numThreads = 2):
+    fitnessCalculation = [[] for _ in range(numThreads)]
+    threads = []
+    elementsPerThread = geneticManager.populationLen // numThreads
+
+    # Create threads
+    for i in range(numThreads):
+        t = threading.Thread(
+            target=subPopulationFitness, 
+            args=(env, geneticManager.population[i*elementsPerThread:(i+1)*elementsPerThread], fitnessCalculation, i)
+        )
+
+        threads.append(t)
+        t.start() # initialize a thread
+        
+    # Wait for all threads to end
+    for t in threads:  
+        t.join()
+
+    # Join the results
+    finalFitness = []
+    for i in range(numThreads):
+        finalFitness = finalFitness + fitnessCalculation[i]
+
+    return finalFitness
+
+# Calculates fitness for a portion of the population (Thread target function)
+def subPopulationFitness(env: gym.Env, subpopulation: list, results: list, index: int):
+    results[index] = [{"ind": ind, "fitness": geneticManager.fitness(ind, env)} for ind in subpopulation]
 
 # Calculates average fitness by generation
 def avgFitness(population):
@@ -39,7 +71,7 @@ def main():
 
     for generation in range(numberGenerations):
         # Calculate fitness 
-        popWithFit = geneticManager.calculateFullPopulationFitness(env, 3)
+        popWithFit = calculateFullPopulationFitness(env)
         sortedPop = sorted(popWithFit, key=itemgetter('fitness'), reverse=True)
         
         # Get best individuals (elitism)
