@@ -11,7 +11,7 @@ auxFunctions = AuxFunctions(env, geneticManager)
 
 numberGenerations = 200
 
-# "Main"
+# Main - Genetic Algorithms main loop
 def main():
     bestIndividual = {"gen": 0, "ind": ["None"], "fitness": 0.0}
 
