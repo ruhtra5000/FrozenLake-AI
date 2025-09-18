@@ -21,7 +21,7 @@ def avgFitness(population):
 def testBestIndividual(bestIndividual):
     testEnv = gym.make("FrozenLake-v1", is_slippery=True, render_mode = "human")
 
-    print(f"\n\nBest individual data\nDNA: {bestIndividual["ind"]}\nFitness:{bestIndividual["fitness"]}")
+    print(f"\n\nBest individual data\nDNA: {bestIndividual["ind"]}\nFitness: {bestIndividual["fitness"]}")
 
     for _ in range(10):
         state, _ = testEnv.reset()
@@ -39,7 +39,7 @@ def main():
 
     for generation in range(numberGenerations):
         # Calculate fitness 
-        popWithFit = geneticManager.calculateFullPopulationFitness(env)
+        popWithFit = geneticManager.calculateFullPopulationFitness(env, 3)
         sortedPop = sorted(popWithFit, key=itemgetter('fitness'), reverse=True)
         
         # Get best individuals (elitism)
