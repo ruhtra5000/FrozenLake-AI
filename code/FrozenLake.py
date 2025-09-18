@@ -9,7 +9,7 @@ env = gym.make("FrozenLake-v1", is_slippery=True, render_mode = None)
 geneticManager = GeneticManager(env.action_space)
 auxFunctions = AuxFunctions(env, geneticManager)
 
-numberGenerations = 20
+numberGenerations = 200
 
 # "Main"
 def main():
